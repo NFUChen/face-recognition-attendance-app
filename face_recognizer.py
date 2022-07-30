@@ -41,7 +41,10 @@ class FaceRecognizer:
     
 
     def _load_encoding_images(self) -> None:
-        
+        if not os.path.exists("./images_encoding"):
+            print(f"./images_encoding not found, making folder...")
+            os.makedirs("./images_encoding")
+
         all_images_file_path = self._get_all_images_files_path()
         
         for img_path in all_images_file_path:
@@ -64,10 +67,6 @@ class FaceRecognizer:
             
             # Get encoding
             img_encoding = face_recognition.face_encodings(rgb_img).pop()
-            if not os.path.exists("./images_encoding"):
-                print(f"./images_encoding not found, making folder...")
-                os.makedirs("./images_encoding")
-                
             np.save(f'./images_encoding/{filename}', img_encoding)
 
             
