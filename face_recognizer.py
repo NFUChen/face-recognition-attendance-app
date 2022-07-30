@@ -27,13 +27,11 @@ class FaceRecognizer:
         self._load_encoding_images()
         
     def _get_all_images_files_path(self) -> List[str]:
-        images_extensions = ["jpg","jpeg", "png", "webp"]
-        images_path = []
-        for extension in images_extensions:
-            current_image_files = glob.glob(
-                os.path.join(self.images_folder_path, f"*.{extension}")
-            )
-            images_path.extend(current_image_files)
+    
+    
+        images_path = glob.glob(
+            os.path.join(self.images_folder_path, f"*.*")
+        )
 
         print(f"{len(images_path)} encoding images found.")
         
@@ -101,6 +99,7 @@ class FaceRecognizer:
 
         # Convert to numpy array to adjust coordinates with frame resizing quickly
         face_locations = (np.array(face_locations) / self.frame_resizing).astype(int)
+        
         red_color_code = (0, 0, 255)
         green_color_code = (0,255, 0)
 
@@ -111,7 +110,7 @@ class FaceRecognizer:
                 cv2.rectangle(frame, (x1, y1), (x2, y2), red_color_code, 8)
                 continue
 
-            cv2.putText(frame, f"Time Recorded: {Timer.get_current_time()}", (x1, y1 - 10), cv2.FONT_HERSHEY_DUPLEX, 1, green_color_code, 2)
+            cv2.putText(frame, f"Time Recorded: {Timer.get_current_time()} {name}", (x1, y1 - 10), cv2.FONT_HERSHEY_DUPLEX, 1, green_color_code, 2)
             cv2.rectangle(frame, (x1, y1), (x2, y2), green_color_code, 8)
 
             self.human_resources_system.record_time_for_employee(name)
