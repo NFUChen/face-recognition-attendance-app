@@ -1,6 +1,4 @@
 from typing import Dict
-import os
-import glob
 from employee import Employee
 from IPython.display import clear_output
 from playsound import playsound

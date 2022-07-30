@@ -39,29 +39,40 @@ class FaceRecognizer:
         
         return images_path
 
+    
+    
+
     def _load_encoding_images(self) -> None:
         
         all_images_file_path = self._get_all_images_files_path()
         
         for img_path in all_images_file_path:
-            
             basename = os.path.basename(img_path)
             (filename, _ext) = os.path.splitext(basename)
             print(f"Loading {filename}...")
-            
+            array_file_path = f'./images_encoding/{filename}.npy'
+            #如有現有的array文件可以用
+            if os.path.exists(array_file_path):
+                img_encoding = np.load(array_file_path)
+                self.known_face_encodings.append(img_encoding)
+                self.known_face_names.append(filename)
+                print(f"Adding {filename} to system...")
+                self.human_resources_system.add_employee(filename)
+                continue
+
             img = cv2.imread(img_path)
             rgb_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
             
             # Get encoding
             img_encoding = face_recognition.face_encodings(rgb_img).pop()
+            np.save(f'./images_encoding/{filename}', img_encoding)
 
+            
+            print(f"Adding {filename} to system...")
             # Store file name and file encoding
             self.known_face_encodings.append(img_encoding)
             self.known_face_names.append(filename)
-            # add employee
-            
-            print(f"Adding {filename} to system...")
             self.human_resources_system.add_employee(filename)
         print("Encoding images loaded")
         
