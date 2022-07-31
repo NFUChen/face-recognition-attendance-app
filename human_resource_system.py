@@ -7,7 +7,7 @@ from playsound import playsound
 
 json = List[Dict[str, str]]
 class HumanResourceSystem:
-    def __init__(self, images_folder_path) -> None:
+    def __init__(self, images_folder_path:str) -> None:
         self.images_folder_path = images_folder_path
         self.employees:Dict[str, Employee] = {}
 
@@ -44,11 +44,9 @@ class HumanResourceSystem:
             report.extend(emp_info)
         return report
 
-    def output_current_seession_punchcard_info(self) -> None:
+    def output_current_seession_punchcard_info(self) -> pd.core.frame.DataFrame:
         return pd.DataFrame(self._generate_report())
     
-
-
     def __repr__(self) -> str:
         return "\n".join([repr(emp) for emp in self.employees.values()])
     
