@@ -1,4 +1,3 @@
-import sys
 from typing import List
 import numpy as np
 import face_recognition
@@ -22,12 +21,11 @@ class FaceRecognizer:
         self.known_face_names = []
 
         # Resize frame for a faster speed
-        self.frame_resizing = 0.25
+        self.frame_resizing = 0.4
         
         self._load_encoding_images()
         
     def _get_all_images_files_path(self) -> List[str]:
-    
     
         images_path = glob.glob(
             os.path.join(self.images_folder_path, f"*.*")
@@ -36,10 +34,7 @@ class FaceRecognizer:
         print(f"{len(images_path)} encoding images found.")
         
         return images_path
-
-    
-    
-
+        
     def _load_encoding_images(self) -> None:
         if not os.path.exists("./images_encoding"):
             print(f"./images_encoding not found, making folder...")
@@ -94,8 +89,10 @@ class FaceRecognizer:
             # known face with the smallest distance to the new face
             face_distances = face_recognition.face_distance(self.known_face_encodings, face_encoding)
             best_match_index = np.argmin(face_distances)
+
+
     
-            name = self.known_face_names[best_match_index] if matches[best_match_index] else UnknownName
+            name = self.known_face_names[best_match_index] if (matches[best_match_index]) and (face_distances[best_match_index] < 0.35)  else UnknownName
             
         
             face_names.append(name)
@@ -124,4 +121,4 @@ class FaceRecognizer:
     
     def run(self):
         cap = VideoCapturer()
-        cap.capture_video_with_threading(self._detect_known_faces, self.is_headless)
+        cap.capture_video(self._detect_known_faces, self.is_headless)
