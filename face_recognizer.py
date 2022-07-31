@@ -85,14 +85,13 @@ class FaceRecognizer:
             # See if the face is a match for the known face(s)
             matches = face_recognition.compare_faces(self.known_face_encodings, face_encoding)
 
-
             # known face with the smallest distance to the new face
             face_distances = face_recognition.face_distance(self.known_face_encodings, face_encoding)
             best_match_index = np.argmin(face_distances)
 
 
     
-            name = self.known_face_names[best_match_index] if (matches[best_match_index]) and (face_distances[best_match_index] < 0.35)  else UnknownName
+            name = self.known_face_names[best_match_index] if (matches[best_match_index]) and (face_distances[best_match_index] < 0.4)  else UnknownName
             
         
             face_names.append(name)
@@ -103,6 +102,9 @@ class FaceRecognizer:
         red_color_code = (0, 0, 255)
         green_color_code = (0,255, 0)
 
+        if len(face_locations) == 0 or len(face_names) == 0:
+            return frame
+
         for face_loc, name in zip(face_locations, face_names):
             y1, x2, y2, x1 = face_loc
             if not self.human_resources_system.is_valid_employee(name):
@@ -110,7 +112,7 @@ class FaceRecognizer:
                 cv2.rectangle(frame, (x1, y1), (x2, y2), red_color_code, 8)
                 continue
 
-            cv2.putText(frame, f"Time Recorded: {Timer.get_current_time()} {name}", (x1, y1 - 10), cv2.FONT_HERSHEY_DUPLEX, 1, green_color_code, 2)
+            cv2.putText(frame, f"Time Recorded: {name}", (x1, y1 - 10), cv2.FONT_HERSHEY_DUPLEX, 1, green_color_code, 2)
             cv2.rectangle(frame, (x1, y1), (x2, y2), green_color_code, 8)
 
             self.human_resources_system.record_time_for_employee(name)
@@ -122,3 +124,5 @@ class FaceRecognizer:
     def run(self):
         cap = VideoCapturer()
         cap.capture_video(self._detect_known_faces, self.is_headless)
+
+        return self.human_resources_system.output_current_seession_punchcard_info()

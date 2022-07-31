@@ -1,11 +1,15 @@
+from typing import List, Dict
 from timer import Timer
+
+json = List[Dict[str, str]]
+
 class Employee:
-    def __init__(self, chi_name:str) -> None:
-        self.chi_name = chi_name
+    def __init__(self, name:str) -> None:
+        self.name = name
         self.time_dict = {}
         
     def get_chinese_name(self) -> str:
-        return self.chi_name
+        return self.name
     
     def record_time(self) -> str:
         current_date = Timer.get_current_date()
@@ -22,8 +26,25 @@ class Employee:
                 
         self.time_dict[current_date]["off_work"] = current_time
 
+    def to_json(self) -> json:
+        json = []
+        for date in self.time_dict.keys():
+            on_work_time = self.time_dict[date]["on_work"]
+            off_work_time = self.time_dict[date]["off_work"]
+
+            current_dict = {
+                "name":self.name,
+                "date":date,
+                "on_work":on_work_time,
+                "off_work":off_work_time,
+                "working_hour": Timer(on_work_time) - Timer(off_work_time)
+            }
+            json.append(current_dict)
+        return json
+
+
     def __repr__(self) -> str:
-        return f"Name: {self.chi_name}, Time Info: {self.time_dict}"
+        return f"Name: {self.name}, Time Info: {self.time_dict}"
 
 
         

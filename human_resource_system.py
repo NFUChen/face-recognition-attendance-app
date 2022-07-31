@@ -1,9 +1,11 @@
-from typing import Dict
+from typing import List, Dict
+import pandas as pd
 import os
 from employee import Employee
 from IPython.display import clear_output
 from playsound import playsound
 
+json = List[Dict[str, str]]
 class HumanResourceSystem:
     def __init__(self, images_folder_path) -> None:
         self.images_folder_path = images_folder_path
@@ -34,6 +36,16 @@ class HumanResourceSystem:
         self.employees[employee_name].record_time()
         playsound('ding.mp3', block = False)
         self._visulize_current_card_punching_status()
+    
+    def _generate_report(self) -> json:
+        report = []
+        for emp in self.employees.values():
+            emp_info = emp.to_json()
+            report.extend(emp_info)
+        return report
+
+    def output_current_seession_punchcard_info(self) -> None:
+        return pd.DataFrame(self._generate_report())
     
 
 
