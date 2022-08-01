@@ -55,7 +55,7 @@ class FaceRecognizer:
                 rgb_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
                 # Get encoding
                 img_encoding = face_recognition.face_encodings(rgb_img).pop()
-                np.save(f'./images_encoding/{filename}', img_encoding)
+                np.save(array_file_path, img_encoding)
 
             print(f"Adding {filename} to system...")
             # Store file name and file encoding
