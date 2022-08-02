@@ -51,8 +51,8 @@ class HumanResourceSystem:
 
     def output_csv_file(self) -> None:
         df = self.output_current_seession_punchcard_info()
-        max_timestamp = str(max(df["date"]).date())
-        min_timestamp = str(min(df["date"]).date())
+        max_timestamp = str(max(df["date"]).date()).replace("-", "")
+        min_timestamp = str(min(df["date"]).date()).replace("-", "")
         output_file_name = (
             min_timestamp
             if max_timestamp == min_timestamp else f"{min_timestamp}-{max_timestamp}"
