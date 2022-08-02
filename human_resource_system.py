@@ -50,9 +50,9 @@ class HumanResourceSystem:
         return df
 
     def output_csv_file(self) -> None:
-        df = pd.DataFrame(self._generate_report())
-        max_timestamp = max(df["date"]).split(" ").pop(0).replace("/", "-")
-        min_timestamp = min(df["date"]).split(" ").pop(0).replace("/", "-")
+        df = self.output_current_seession_punchcard_info()
+        max_timestamp = str(max(df["date"]).date())
+        min_timestamp = str(min(df["date"]).date())
         output_file_name = (
             min_timestamp
             if max_timestamp == min_timestamp else f"{min_timestamp}-{max_timestamp}"
