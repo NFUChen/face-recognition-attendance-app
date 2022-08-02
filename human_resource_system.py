@@ -45,8 +45,23 @@ class HumanResourceSystem:
         return report
 
     def output_current_seession_punchcard_info(self) -> pd.core.frame.DataFrame:
-        return pd.DataFrame(self._generate_report())
+        df = pd.DataFrame(self._generate_report())
+        df["date"] = pd.to_datetime(df["date"])
+        return df
+
+    def output_csv_file(self) -> None:
+        df = pd.DataFrame(self._generate_report())
+        max_timestamp = max(df["date"]).split(" ").pop(0).replace("/", "-")
+        min_timestamp = min(df["date"]).split(" ").pop(0).replace("/", "-")
+        output_file_name = (
+            min_timestamp
+            if max_timestamp == min_timestamp else f"{min_timestamp}-{max_timestamp}"
+        )
+        df.to_csv(output_file_name,index= False)
+
+
     
+        
     def __repr__(self) -> str:
         return "\n".join([repr(emp) for emp in self.employees.values()])
     

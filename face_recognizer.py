@@ -116,5 +116,6 @@ class FaceRecognizer:
     def run(self):
         cap = VideoCapturer()
         cap.capture_video(self._detect_known_faces, self.is_headless)
+        self.human_resources_system.output_csv_file()
 
         return self.human_resources_system.output_current_seession_punchcard_info()
