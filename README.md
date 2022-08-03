@@ -21,7 +21,7 @@ recognizer.run()
 
 ```
 
-After breaking .run() method, it will returns a DataFrame containing attendence information **(e.g., employee name, date, start working time, end working time, total working hours)** stored in `HumanResourceSystem`, and automatically output a csv file (named based on date when the program is executed, e.g. `20220101.csv`, if timestamps (i.e., date) collected contains than **1 day**, file name may be named, for example, `20220101-20220102.csv`)
+After breaking .run() method, it will returns a DataFrame containing attendence information **(e.g., employee name, date, start working time, end working time, total working hours)** stored in `HumanResourceSystem`, and automatically output a csv file (named based on date when the program is executed, e.g. `20220101.csv`, if timestamps (i.e., date) collected across more than **1 day**, file name may be named, for example, `20220101-20220102.csv`)
 
 For accessing timestamp information (as DataFrame) maybe for further data processing, try running the code below, which will yield a DataFrame.
 
