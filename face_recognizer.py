@@ -14,10 +14,18 @@ UnknownName = "Unknown Name"
 
 
 class FaceRecognizer:
+    
     def __init__(self,
                  images_folder_path: str,
                  is_headless: bool = False,
-                 human_resources_system:HumanResourceSystem = HumanResourceSystem()) -> None:
+                 human_resources_system: HumanResourceSystem = HumanResourceSystem()) -> None:
+        '''Create a FaceRecognizer object
+
+        Args:
+            images_folder_path (str): folder that are treated as known people folder
+            is_headless (bool, optional): controls whether FaceRecognizer will run in the backgound or not. Defaults to False.
+            human_resources_system (HumanResourceSystem, optional): system passing in to track its employee attendance. Defaults is to initialize a new HumanResourceSystem object.
+        '''
         self.human_resources_system = human_resources_system
 
         self.images_folder_path = images_folder_path
@@ -31,7 +39,7 @@ class FaceRecognizer:
         self._load_encoding_images()
 
     def _get_all_images_files_path(self) -> List[str]:
-
+    
         images_path = glob.glob(
             os.path.join(self.images_folder_path, f"*.*")
         )
@@ -52,7 +60,7 @@ class FaceRecognizer:
             (filename, _ext) = os.path.splitext(basename)
             print(f"Loading {filename}...")
             array_file_path = f"./images_encoding/{filename}.npy"
-            # 如有現有的array文件可以用
+            # if there exist a cached numpy array file
             if os.path.exists(array_file_path):
                 img_encoding = np.load(array_file_path)
             else:
@@ -125,6 +133,13 @@ class FaceRecognizer:
         return frame
 
     def run(self) -> pd.core.frame.DataFrame:
+        '''Intialize a VideoCapturer and start to capture camera video stream 
+        (i.e., using .capture_video method and passing self._detect_known_faces as callback).
+        For breaking the stream, pressing "q" as exit key
+
+        Returns:
+            pd.core.frame.DataFrame: DataFrame containing timestamp collected by HumanResourceSystem
+        '''
         cap = VideoCapturer()
         cap.capture_video(self._detect_known_faces, self.is_headless)
         self.human_resources_system.output_csv_file()

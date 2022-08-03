@@ -7,13 +7,18 @@ json = List[Dict[str, str]]
 
 class Employee:
     def __init__(self, name: str) -> None:
+        '''Create a Employee object
+
+        Args:
+            name (str): employee name
+        '''
         self.name = name
         self.time_dict = {}
 
-    def get_chinese_name(self) -> str:
-        return self.name
-
-    def record_time(self) -> str:
+    def record_time(self) -> None:
+        '''
+        A method used to record current timestamp
+        '''
         current_date = Timer.get_current_date()
         if current_date not in self.time_dict:
             self.time_dict[current_date] = {
@@ -28,6 +33,12 @@ class Employee:
         self.time_dict[current_date]["off_work"] = current_time
 
     def to_json(self) -> json:
+        '''
+        Jsonify the stored information
+
+        Returns:
+            json (List[Dict[str, str]]): Jsonified information
+        '''
         json = []
         for date in self.time_dict.keys():
             on_work_time = self.time_dict[date]["on_work"]
