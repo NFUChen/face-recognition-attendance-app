@@ -16,8 +16,9 @@ UnknownName = "Unknown Name"
 class FaceRecognizer:
     def __init__(self,
                  images_folder_path: str,
-                 is_headless: bool = False) -> None:
-        self.human_resources_system = HumanResourceSystem()
+                 is_headless: bool = False,
+                 human_resources_system:HumanResourceSystem = HumanResourceSystem()) -> None:
+        self.human_resources_system = human_resources_system
 
         self.images_folder_path = images_folder_path
         self.is_headless = is_headless
