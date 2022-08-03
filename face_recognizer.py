@@ -1,19 +1,23 @@
-from typing import List
-import numpy as np
-import face_recognition
-import cv2
 import glob
 import os
+from typing import List
 
-from video_capturer import VideoCapturer
+import cv2
+import numpy as np
+import pandas as pd
+import face_recognition
+
 from human_resource_system import HumanResourceSystem
-from timer import Timer
+from video_capturer import VideoCapturer
 
 UnknownName = "Unknown Name"
 
+
 class FaceRecognizer:
-    def __init__(self, images_folder_path:str, is_headless:bool = False) -> None:
-        self.human_resources_system = HumanResourceSystem(images_folder_path)
+    def __init__(self,
+                 images_folder_path: str,
+                 is_headless: bool = False) -> None:
+        self.human_resources_system = HumanResourceSystem()
 
         self.images_folder_path = images_folder_path
         self.is_headless = is_headless
@@ -22,32 +26,32 @@ class FaceRecognizer:
 
         # Resize frame for a faster speed
         self.frame_resizing = 0.4
-        
+
         self._load_encoding_images()
-        
+
     def _get_all_images_files_path(self) -> List[str]:
-    
+
         images_path = glob.glob(
             os.path.join(self.images_folder_path, f"*.*")
         )
 
         print(f"{len(images_path)} encoding images found.")
-        
+
         return images_path
-        
+
     def _load_encoding_images(self) -> None:
         if not os.path.exists("./images_encoding"):
             print(f"./images_encoding not found, making folder...")
             os.makedirs("./images_encoding")
 
         all_images_file_path = self._get_all_images_files_path()
-        
+
         for img_path in all_images_file_path:
             basename = os.path.basename(img_path)
             (filename, _ext) = os.path.splitext(basename)
             print(f"Loading {filename}...")
-            array_file_path = f'./images_encoding/{filename}.npy'
-            #如有現有的array文件可以用
+            array_file_path = f"./images_encoding/{filename}.npy"
+            # 如有現有的array文件可以用
             if os.path.exists(array_file_path):
                 img_encoding = np.load(array_file_path)
             else:
@@ -63,36 +67,42 @@ class FaceRecognizer:
             self.known_face_names.append(filename)
             self.human_resources_system.add_employee(filename)
         print("Encoding images loaded")
-        
-    def _detect_known_faces(self, frame:np.ndarray) -> np.ndarray:
-        small_frame = cv2.resize(frame, (0, 0), fx=self.frame_resizing, fy=self.frame_resizing)
+
+    def _detect_known_faces(self, frame: np.ndarray) -> np.ndarray:
+        small_frame = cv2.resize(
+            frame, (0, 0), fx=self.frame_resizing, fy=self.frame_resizing)
         # Find all the faces and face encodings in the current frame of video
         # Convert the image from BGR color (which OpenCV uses) to RGB color (which face_recognition uses)
         rgb_small_frame = cv2.cvtColor(small_frame, cv2.COLOR_BGR2RGB)
         face_locations = face_recognition.face_locations(rgb_small_frame)
-        face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
+        face_encodings = face_recognition.face_encodings(
+            rgb_small_frame, face_locations)
 
         face_names = []
         for face_encoding in face_encodings:
             # See if the face is a match for the known face(s)
-            matches = face_recognition.compare_faces(self.known_face_encodings, face_encoding)
+            matches = face_recognition.compare_faces(
+                self.known_face_encodings, face_encoding)
 
             # known face with the smallest distance to the new face
-            face_distances = face_recognition.face_distance(self.known_face_encodings, face_encoding)
+            face_distances = face_recognition.face_distance(
+                self.known_face_encodings, face_encoding)
             best_match_index = np.argmin(face_distances)
 
+            name = (
+                self.known_face_names[best_match_index] 
+                if (matches[best_match_index]) and (face_distances[best_match_index] < 0.4) 
+                else UnknownName
+            )
 
-    
-            name = self.known_face_names[best_match_index] if (matches[best_match_index]) and (face_distances[best_match_index] < 0.4)  else UnknownName
-            
-        
             face_names.append(name)
 
         # Convert to numpy array to adjust coordinates with frame resizing quickly
-        face_locations = (np.array(face_locations) / self.frame_resizing).astype(int)
-        
+        face_locations = (np.array(face_locations) /
+                          self.frame_resizing).astype(int)
+
         red_color_code = (0, 0, 255)
-        green_color_code = (0,255, 0)
+        green_color_code = (0, 255, 0)
 
         if len(face_locations) == 0 or len(face_names) == 0:
             return frame
@@ -100,20 +110,20 @@ class FaceRecognizer:
         for face_loc, name in zip(face_locations, face_names):
             y1, x2, y2, x1 = face_loc
             if not self.human_resources_system.is_valid_employee(name):
-                cv2.putText(frame, f"{UnknownName}", (x1, y1 - 10), cv2.FONT_HERSHEY_DUPLEX, 1, red_color_code, 2)
+                cv2.putText(frame, f"{UnknownName}", (x1, y1 - 10),
+                            cv2.FONT_HERSHEY_DUPLEX, 1, red_color_code, 2)
                 cv2.rectangle(frame, (x1, y1), (x2, y2), red_color_code, 8)
                 continue
 
-            cv2.putText(frame, f"Time Recorded: {name}", (x1, y1 - 10), cv2.FONT_HERSHEY_DUPLEX, 1, green_color_code, 2)
+            cv2.putText(frame, f"Time Recorded: {name}", (x1, y1 - 10),
+                        cv2.FONT_HERSHEY_DUPLEX, 1, green_color_code, 2)
             cv2.rectangle(frame, (x1, y1), (x2, y2), green_color_code, 8)
 
             self.human_resources_system.record_time_for_employee(name)
-        
-        
-        
+
         return frame
-    
-    def run(self):
+
+    def run(self) -> pd.core.frame.DataFrame:
         cap = VideoCapturer()
         cap.capture_video(self._detect_known_faces, self.is_headless)
         self.human_resources_system.output_csv_file()
