@@ -1,6 +1,6 @@
 from typing import Dict, List
 
-from timer import Timer
+from .timer import Timer
 
 json = List[Dict[str, str]]
 

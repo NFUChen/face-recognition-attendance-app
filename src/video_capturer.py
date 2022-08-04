@@ -2,7 +2,7 @@ from typing import Callable
 
 import cv2
 
-from webcam_video_stream import WebcamVideoStream
+from .webcam_video_stream import WebcamVideoStream
 
 
 class VideoCapturer:

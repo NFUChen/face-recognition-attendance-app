@@ -7,8 +7,8 @@ import numpy as np
 import pandas as pd
 import face_recognition
 
-from human_resource_system import HumanResourceSystem
-from video_capturer import VideoCapturer
+from .human_resource_system import HumanResourceSystem
+from .video_capturer import VideoCapturer
 
 UnknownName = "Unknown Name"
 
@@ -49,9 +49,10 @@ class FaceRecognizer:
         return images_path
 
     def _load_encoding_images(self) -> None:
-        if not os.path.exists("./images_encoding"):
-            print(f"./images_encoding not found, making folder...")
-            os.makedirs("./images_encoding")
+        ENCODING_IMAGES_DIR  = f"{self.images_folder_path}/images_encoding"
+        if not os.path.exists(ENCODING_IMAGES_DIR):
+            print(f"{ENCODING_IMAGES_DIR} not found, making folder...")
+            os.makedirs(ENCODING_IMAGES_DIR)
 
         all_images_file_path = self._get_all_images_files_path()
 
@@ -59,7 +60,7 @@ class FaceRecognizer:
             basename = os.path.basename(img_path)
             (filename, _ext) = os.path.splitext(basename)
             print(f"Loading {filename}...")
-            array_file_path = f"./images_encoding/{filename}.npy"
+            array_file_path = f"{ENCODING_IMAGES_DIR}/{filename}.npy"
             # if there exist a cached numpy array file
             if os.path.exists(array_file_path):
                 img_encoding = np.load(array_file_path)

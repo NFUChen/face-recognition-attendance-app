@@ -5,7 +5,7 @@ import pandas as pd
 from IPython.display import clear_output
 from playsound import playsound
 
-from employee import Employee
+from .employee import Employee
 
 json = List[Dict[str, str]]
 
@@ -61,7 +61,7 @@ class HumanResourceSystem:
             return
 
         self.employees[employee_name].record_time()
-        playsound('ding.mp3', block=False)
+        playsound('./src/ding.mp3', block=False)
         self._visulize_current_card_punching_status()
 
     def _generate_report(self) -> json:
