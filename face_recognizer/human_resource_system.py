@@ -61,7 +61,7 @@ class HumanResourceSystem:
             return
 
         self.employees[employee_name].record_time()
-        playsound('./src/ding.mp3', block=False)
+        playsound('./face_recognizer/ding.mp3', block=False)
         self._visulize_current_card_punching_status()
 
     def _generate_report(self) -> json:

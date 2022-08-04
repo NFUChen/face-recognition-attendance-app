@@ -1,4 +1,4 @@
-from src import FaceRecognizer
+from face_recognizer import FaceRecognizer
 
 def main():
     recognizer = FaceRecognizer(images_folder_path= "./images",is_headless= False)
